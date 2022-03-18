@@ -1,0 +1,3 @@
+<items gfxroot="gfx/items/" version="1" deathanm2="gfx/death items.anm2">
+	<passive id="0" name="Blank Bombs" description="Enter the basement" gfx="collectibles_097x_BlankBombs.png" bombs="5" quality="2" tags="summonable offensive"/>
+</items>
