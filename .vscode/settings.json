@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "*.anm2": "xml"
-    }
+    },
+    "clockify.tracking.workspaceId": "631868837993a90d8fabf65a"
 }
