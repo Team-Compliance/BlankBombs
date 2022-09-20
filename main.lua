@@ -177,7 +177,7 @@ mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, mod.BombUpdate)
 ---@param radius number
 function mod:DoBlankEffect(center, radius)
 	--Remove projectiles in radius
-	for _, projectile in ipairs(Isaac.FindInRadius(center, radius, EntityPartition.BULLET)) do
+	for _, projectile in ipairs(Isaac.FindInRadius(center, radius * 3, EntityPartition.BULLET)) do
 		projectile:Die()
 	end
 
