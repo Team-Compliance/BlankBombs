@@ -1,0 +1,3 @@
+<entities anm2root="gfx/" version="5">
+    <entity name="blank explosion" anm2path="blank_explosion.anm2" id="1000" variant=""/> 
+</entities>

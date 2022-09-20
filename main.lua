@@ -2,6 +2,7 @@ BlankBombsMod = RegisterMod("Blank Bombs", 1)
 local mod = BlankBombsMod
 
 CollectibleType.COLLECTIBLE_BLANK_BOMBS = Isaac.GetItemIdByName("Blank Bombs")
+local BLANK_EXPLOSION_EFFECT_VARIANT = Isaac.GetEntityVariantByName("blank explosion")
 local BombsInRoom = {}
 
 if EID then
@@ -176,16 +177,37 @@ mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, mod.BombUpdate)
 ---@param center Vector
 ---@param radius number
 function mod:DoBlankEffect(center, radius)
+	--Spawn cool explosion effect
+	local blankExplosion = Isaac.Spawn(EntityType.ENTITY_EFFECT, BLANK_EXPLOSION_EFFECT_VARIANT, 0, center, Vector.Zero, nil)
+	blankExplosion:GetSprite():Play("Explode", true)
+	blankExplosion.DepthOffset = 9999
+
 	--Remove projectiles in radius
-	for _, projectile in ipairs(Isaac.FindInRadius(center, radius * 3, EntityPartition.BULLET)) do
-		projectile:Die()
+	for _, projectile in ipairs(Isaac.FindByType(EntityType.ENTITY_PROJECTILE)) do
+		projectile = projectile:ToProjectile()
+
+		local realPosition = projectile.Position - Vector(0, projectile.Height)
+
+		if realPosition:DistanceSquared(center) <= (radius * 3) ^ 2 then
+			if projectile:HasProjectileFlags(ProjectileFlags.ACID_GREEN) or
+			projectile:HasProjectileFlags(ProjectileFlags.ACID_RED) or
+			projectile:HasProjectileFlags(ProjectileFlags.CREEP_BROWN) or
+			projectile:HasProjectileFlags(ProjectileFlags.EXPLODE) or
+			projectile:HasProjectileFlags(ProjectileFlags.BURST) or
+			projectile:HasProjectileFlags(ProjectileFlags.ACID_GREEN) then
+				--If the projectile has any flag that triggers on hit, we need to remove the projectile
+				projectile:Remove()
+			else
+				projectile:Die()
+			end
+		end
 	end
 
 	--Push enemies back
 	for _, entity in ipairs(Isaac.FindInRadius(center, radius * 3, EntityPartition.ENEMY)) do
 		if entity:IsActiveEnemy(false) and entity:IsVulnerableEnemy() then
 			local pushDirection = (entity.Position - center):Normalized()
-			entity:AddVelocity(pushDirection * 20)
+			entity:AddVelocity(pushDirection * 30)
 		end
 	end
 end
@@ -222,12 +244,15 @@ end
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.OnPlayerUpdate)
 
 
-function mod:OnPlayerRender(player)
-	local str = player:HasEntityFlags(EntityFlag.FLAG_NO_KNOCKBACK)
+---@param effect EntityEffect
+function mod:OnBlankExplosionUpdate(effect)
+	local spr = effect:GetSprite()
 
-	Isaac.RenderText(tostring(str), 100, 100, 1, 1, 0, 1)
+	if spr:IsFinished("Explode") then
+		effect:Remove()
+	end
 end
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, mod.OnPlayerRender)
+mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.OnBlankExplosionUpdate, BLANK_EXPLOSION_EFFECT_VARIANT)
 
 -------
 
