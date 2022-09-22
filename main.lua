@@ -175,6 +175,14 @@ function mod:BombUpdate(bomb)
 
 	local sprite = bomb:GetSprite()
 	if sprite:IsPlaying("Explode") then
+		if bomb:HasTearFlags(TearFlags.TEAR_SCATTER_BOMB) then
+			for _, scatterBomb in ipairs(Isaac.FindByType(EntityType.ENTITY_BOMB)) do
+				if scatterBomb.FrameCount == 0 then
+					table.insert(BombsInRoom, GetPtrHash(scatterBomb))
+				end
+			end
+		end
+
 		local explosionRadius = GetBombExplosionRadius(bomb)
 		if bomb:HasTearFlags(TearFlags.TEAR_GIGA_BOMB) then
 			explosionRadius = 99999
@@ -227,6 +235,7 @@ function mod:DoBlankEffect(center, radius)
 	local blankExplosion = Isaac.Spawn(EntityType.ENTITY_EFFECT, BLANK_EXPLOSION_EFFECT_VARIANT, 0, center, Vector.Zero, nil)
 	blankExplosion:GetSprite():Play("Explode", true)
 	blankExplosion.DepthOffset = 9999
+	blankExplosion.SpriteScale = blankExplosion.SpriteScale * (radius/90)
 
 	--Do screen wobble
 	ScreenWobble(center)
