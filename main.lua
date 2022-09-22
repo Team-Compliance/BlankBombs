@@ -146,7 +146,9 @@ function mod:OnBombInitLate(bomb)
 	local spritesheetPreffix = ""
 	local spritesheetSuffix = ""
 
-	if bomb:HasTearFlags(TearFlags.TEAR_BRIMSTONE_BOMB) then
+	if bomb.Variant == BombVariant.BOMB_ROCKET then
+		spritesheetPreffix = "rocket_"
+	elseif bomb:HasTearFlags(TearFlags.TEAR_BRIMSTONE_BOMB) then
 		spritesheetPreffix = "brimstone_"
 	end
 
