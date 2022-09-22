@@ -4,6 +4,7 @@ local mod = BlankBombsMod
 CollectibleType.COLLECTIBLE_BLANK_BOMBS = Isaac.GetItemIdByName("Blank Bombs")
 local BLANK_EXPLOSION_EFFECT_VARIANT = Isaac.GetEntityVariantByName("blank explosion")
 local BombsInRoom = {}
+local RocketsAboutToExplode = {}
 
 if EID then
 	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "Placed bombs destroy all enemy projectiles and confuse all enemies for 1 second upon exploding#+5 Bombs", "Blank Bombs", "en_us")
@@ -216,6 +217,30 @@ function mod:OnMonstroUpdate(monstro)
 	end
 end
 mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.OnMonstroUpdate, EntityType.ENTITY_MONSTRO)
+
+
+---@param rocket EntityEffect
+function mod:OnEpicFetusRocketUpdate(rocket)
+	if rocket.Timeout ~= 0 then return end
+
+	local ptrHash = GetPtrHash(rocket)
+
+	local isGonnaExplode = false
+
+	for i, otherPtr in ipairs(RocketsAboutToExplode) do
+		if ptrHash == otherPtr then
+			table.remove(RocketsAboutToExplode, i)
+			isGonnaExplode = true
+		end
+	end
+
+	if isGonnaExplode then
+		mod:DoBlankEffect(rocket.Position, 90)
+	else
+		table.insert(RocketsAboutToExplode, ptrHash)
+	end
+end
+mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.OnEpicFetusRocketUpdate, EffectVariant.ROCKET)
 
 
 function ScreenWobble(position)
