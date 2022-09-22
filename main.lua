@@ -67,8 +67,7 @@ local function IsBlankBomb(bomb)
 	if not bomb then return false end
 	if bomb.Type ~= EntityType.ENTITY_BOMB then return false end
 	bomb = bomb:ToBomb()
-	if bomb.Variant ~= BombVariant.BOMB_NORMAL then return false end
-	if bomb:HasTearFlags(TearFlags.TEAR_BRIMSTONE_BOMB) then return false end
+	if bomb.Variant ~= BombVariant.BOMB_NORMAL and bomb.Variant ~= BombVariant.BOMB_GIGA then return false end
 
 	local player = mod:GetPlayerFromTear(bomb)
 	if not player then return false end
@@ -123,13 +122,22 @@ mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.OnNewRoom)
 
 ---@param bomb EntityBomb
 function mod:OnBombInitLate(bomb)
+	if bomb.Variant == BombVariant.BOMB_GIGA then return end
+
 	local sprite = bomb:GetSprite()
 
-	if bomb:HasTearFlags(TearFlags.TEAR_GOLDEN_BOMB) then
-		sprite:ReplaceSpritesheet(0, "gfx/items/pick ups/bombs/costumes/blank_bombs_gold.png")
-	else
-		sprite:ReplaceSpritesheet(0, "gfx/items/pick ups/bombs/costumes/blank_bombs.png")
+	local spritesheetPreffix = ""
+	local spritesheetSuffix = ""
+
+	if bomb:HasTearFlags(TearFlags.TEAR_BRIMSTONE_BOMB) then
+		spritesheetPreffix = "brimstone_"
 	end
+
+	if bomb:HasTearFlags(TearFlags.TEAR_GOLDEN_BOMB) then
+		spritesheetSuffix = "_gold"
+	end
+
+	sprite:ReplaceSpritesheet(0, "gfx/items/pick ups/bombs/costumes/" .. spritesheetPreffix .. "blank_bombs" .. spritesheetSuffix .. ".png")
 	sprite:LoadGraphics()
 
 	local wasInRoom = false
@@ -146,7 +154,7 @@ function mod:OnBombInitLate(bomb)
 	local player = mod:GetPlayerFromTear(bomb)
 	local controller = player.ControllerIndex
 
-	if not Input.IsActionPressed(ButtonAction.ACTION_DROP, controller) then
+	if not Input.IsActionPressed(ButtonAction.ACTION_DROP, controller) and not bomb.IsFetus then
 		if not player:HasEntityFlags(EntityFlag.FLAG_NO_KNOCKBACK) then
 			player:AddEntityFlags(EntityFlag.FLAG_NO_KNOCKBACK)
 			player:GetData().AddNoKnockBackFlag = 2
@@ -168,10 +176,48 @@ function mod:BombUpdate(bomb)
 	local sprite = bomb:GetSprite()
 	if sprite:IsPlaying("Explode") then
 		local explosionRadius = GetBombExplosionRadius(bomb)
+		if bomb:HasTearFlags(TearFlags.TEAR_GIGA_BOMB) then
+			explosionRadius = 99999
+		end
 		mod:DoBlankEffect(bomb.Position, explosionRadius)
 	end
 end
 mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, mod.BombUpdate)
+
+
+function mod:OnMonstroUpdate(monstro)
+	if monstro:GetData().IsAbusedMonstro then
+
+		SFXManager():Stop(SoundEffect.SOUND_FORESTBOSS_STOMPS)
+
+		for _, effect in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.POOF02)) do
+			if effect.FrameCount == 0 then
+				effect:Remove()
+			end
+		end
+
+		monstro:Remove()
+	end
+end
+mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.OnMonstroUpdate, EntityType.ENTITY_MONSTRO)
+
+
+function ScreenWobble(position)
+	local abusedMonstro = Isaac.Spawn(EntityType.ENTITY_MONSTRO, 0, 0, position, Vector.Zero, nil)
+	abusedMonstro = abusedMonstro:ToNPC()
+
+	abusedMonstro.Visible = false
+	abusedMonstro.EntityCollisionClass = EntityCollisionClass.ENTCOLL_NONE
+	abusedMonstro.GridCollisionClass = GridCollisionClass.COLLISION_NONE
+	abusedMonstro:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
+	abusedMonstro.State = NpcState.STATE_STOMP
+
+	local monstroSpr = abusedMonstro:GetSprite()
+	monstroSpr:Play("JumpDown", true)
+	monstroSpr:SetFrame(32)
+
+	abusedMonstro:GetData().IsAbusedMonstro = true
+end
 
 
 ---@param center Vector
@@ -181,6 +227,9 @@ function mod:DoBlankEffect(center, radius)
 	local blankExplosion = Isaac.Spawn(EntityType.ENTITY_EFFECT, BLANK_EXPLOSION_EFFECT_VARIANT, 0, center, Vector.Zero, nil)
 	blankExplosion:GetSprite():Play("Explode", true)
 	blankExplosion.DepthOffset = 9999
+
+	--Do screen wobble
+	ScreenWobble(center)
 
 	--Remove projectiles in radius
 	for _, projectile in ipairs(Isaac.FindByType(EntityType.ENTITY_PROJECTILE)) do
