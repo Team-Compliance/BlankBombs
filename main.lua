@@ -67,13 +67,29 @@ local function IsBlankBomb(bomb)
 	if not bomb then return false end
 	if bomb.Type ~= EntityType.ENTITY_BOMB then return false end
 	bomb = bomb:ToBomb()
-	if bomb.Variant ~= BombVariant.BOMB_NORMAL and bomb.Variant ~= BombVariant.BOMB_GIGA then return false end
+	if bomb.Variant ~= BombVariant.BOMB_NORMAL and bomb.Variant ~= BombVariant.BOMB_GIGA and 
+	bomb.Variant ~= BombVariant.BOMB_ROCKET then return false end
 
 	local player = mod:GetPlayerFromTear(bomb)
 	if not player then return false end
 	if not player:HasCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS) then return false end
 
 	return true
+end
+
+
+---@param bomb EntityBomb
+local function CanBombInstaDetonate(bomb)
+	local wasInRoom = false
+	local bombPtr = GetPtrHash(bomb)
+	for _, bombInRoom in ipairs(BombsInRoom) do
+		if bombPtr == bombInRoom then
+			wasInRoom = true
+		end
+	end
+
+	return not (wasInRoom or bomb.IsFetus or bomb.Variant == BombVariant.BOMB_ROCKET or
+	bomb.Variant == BombVariant.BOMB_GIGA or bomb.Variant == BombVariant.BOMB_ROCKET_GIGA)
 end
 
 
@@ -140,21 +156,13 @@ function mod:OnBombInitLate(bomb)
 	sprite:ReplaceSpritesheet(0, "gfx/items/pick ups/bombs/costumes/" .. spritesheetPreffix .. "blank_bombs" .. spritesheetSuffix .. ".png")
 	sprite:LoadGraphics()
 
-	local wasInRoom = false
-	local bombPtr = GetPtrHash(bomb)
-	for _, bombInRoom in ipairs(BombsInRoom) do
-		if bombPtr == bombInRoom then
-			wasInRoom = true
-		end
-	end
-
-	if wasInRoom then return end
-
 	--Instantly explode if player isn't pressing ctrl
+	if not CanBombInstaDetonate(bomb) then return end
+
 	local player = mod:GetPlayerFromTear(bomb)
 	local controller = player.ControllerIndex
 
-	if not Input.IsActionPressed(ButtonAction.ACTION_DROP, controller) and not bomb.IsFetus then
+	if not Input.IsActionPressed(ButtonAction.ACTION_DROP, controller) then
 		if not player:HasEntityFlags(EntityFlag.FLAG_NO_KNOCKBACK) then
 			player:AddEntityFlags(EntityFlag.FLAG_NO_KNOCKBACK)
 			player:GetData().AddNoKnockBackFlag = 2
@@ -236,6 +244,7 @@ function mod:DoBlankEffect(center, radius)
 	blankExplosion:GetSprite():Play("Explode", true)
 	blankExplosion.DepthOffset = 9999
 	blankExplosion.SpriteScale = blankExplosion.SpriteScale * (radius/90)
+	blankExplosion.Color = Color(1, 1, 1, math.min(1, radius/90))
 
 	--Do screen wobble
 	ScreenWobble(center)
