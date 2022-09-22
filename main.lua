@@ -7,10 +7,10 @@ local BombsInRoom = {}
 local RocketsAboutToExplode = {}
 
 if EID then
-	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "Placed bombs destroy all enemy projectiles and confuse all enemies for 1 second upon exploding#+5 Bombs", "Blank Bombs", "en_us")
-	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "Las bombas que exploten eliminarán todos los disparos enemigos y confundirán a los enemigos por 1 segundo#+5 Bombas", "Bomas de Fogueo", "spa")
-	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "Размещенные бомбы уничтожают все вражеские снаряды и сбивают с толку всех врагов на 1 секунду после взрыва#+5 бомб.", "Пустые бомбы", "ru")
-	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "Bombas colocadas destroem todos projéteis de enemigos e confundi todos enemigos por 1 segundo depois de explodir#+5 Bombas", "Bombas de Festim", "pt_br")
+	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombs#Placed bombs destroy enemy projectiles and push enemies in range#Placed bombs explode inmediately unless the drop button is pressed", "Blank Bombs", "en_us")
+	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombas#Las bombas que exploten eliminarán los disparos enemigos y empujarán a los enemigos cercanos#Las bombas explotan inmediatamente a menos que se presione la tecla de soltar", "Bombas de Fogueo", "spa")
+	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}}+5 бомб#Размещенные бомбы уничтожают все вражеские снаряды и сбивают с толку всех врагов на 1 секунду после взрыва", "Пустые бомбы", "ru")
+	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}}+5 Bombas#Bombas colocadas destroem todos projéteis de enemigos e confundi todos enemigos por 1 segundo depois de explodir", "Bombas de Festim", "pt_br")
 end
 if MiniMapiItemsAPI then
     local frame = 1
@@ -22,10 +22,10 @@ end
 local Wiki = {
   BlankBombs = {
     { -- Effect
-      {str = "Effect", fsize = 2, clr = 3, halign = 0},
-      {str = "Gives the player 5 bombs."},
-      {str = "Blank Bomb explosions destroy all enemy projectiles."},
-      {str = "Explosions confuse all enemies in the current room for 1 second."},
+		{str = "Effect", fsize = 2, clr = 3, halign = 0},
+		{str = "Gives the player 5 bombs."},
+		{str = "Blank Bomb explosions destroy all enemy projectiles."},
+		{str = "Explosions confuse all enemies in the current room for 1 second."},
 	},
 	{ -- Interactions
       {str = "Interactions", fsize = 2, clr = 3, halign = 0},
