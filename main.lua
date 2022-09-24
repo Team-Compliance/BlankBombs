@@ -8,7 +8,7 @@ local RocketsAboutToExplode = {}
 
 if EID then
 	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombs#The player is immune from their own bomb damage#Placed bombs destroy enemy projectiles and knock back enemies within a radius#Bombs explode instantly upon placement#Press the Drop Key + Bomb Key to place normal bombs", "Blank Bombs", "en_us")
-	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombas#Las bombas que exploten eliminarán los disparos enemigos y empujarán a los enemigos cercanos#Las bombas explotan inmediatamente a menos que se presione la tecla de soltar", "Bombas de Fogueo", "spa")
+	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombas#El jugador es inmune a sus bombas#Las bombas que exploten eliminarán los disparos enemigos y empujarán a los enemigos cercanos#Las bombas explotan inmediatamente#Manten el boton de soltar para poner bombas normales", "Bombas de Fogueo", "spa")
 	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}}+5 бомб#Размещенные бомбы уничтожают все вражеские снаряды и сбивают с толку всех врагов на 1 секунду после взрыва", "Пустые бомбы", "ru")
 	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}}+5 Bombas#Bombas colocadas destroem todos projéteis de enemigos e confundi todos enemigos por 1 segundo depois de explodir", "Bombas de Festim", "pt_br")
 end
@@ -24,7 +24,7 @@ local Wiki = {
     { -- Effect
       {str = "Effect", fsize = 2, clr = 3, halign = 0},
       {str = "Gives the player 5 bombs."},
-      {str = "The player is immune from their own bomb damage."}
+      {str = "The player is immune from their own bomb damage."},
       {str = "Blank Bombs explode instantly upon placement."},
       {str = "If the Drop Key + Bomb Key is pressed, bombs get placed normally."},
       {str = "Blank Bomb explosions destroy all enemy projectiles within a radius."},
@@ -70,12 +70,22 @@ local function IsBlankBomb(bomb)
 	if not bomb then return false end
 	if bomb.Type ~= EntityType.ENTITY_BOMB then return false end
 	bomb = bomb:ToBomb()
-	if bomb.Variant ~= BombVariant.BOMB_NORMAL and bomb.Variant ~= BombVariant.BOMB_GIGA and 
+	if bomb.Variant ~= BombVariant.BOMB_NORMAL and bomb.Variant ~= BombVariant.BOMB_GIGA and
 	bomb.Variant ~= BombVariant.BOMB_ROCKET then return false end
 
 	local player = mod:GetPlayerFromTear(bomb)
 	if not player then return false end
-	if not player:HasCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS) then return false end
+
+	local isRandomNancyBlankBomb = false
+	if player:HasCollectible(CollectibleType.COLLECTIBLE_NANCY_BOMBS) and not
+	player:HasCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS) then
+		local rng = RNG()
+		rng:SetSeed(bomb.InitSeed, 35)
+
+		isRandomNancyBlankBomb = rng:RandomInt(100) < 7
+	end
+
+	if not player:HasCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS) and not isRandomNancyBlankBomb then return false end
 
 	return true
 end
@@ -349,6 +359,29 @@ function mod:OnBlankExplosionUpdate(effect)
 	end
 end
 mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, mod.OnBlankExplosionUpdate, BLANK_EXPLOSION_EFFECT_VARIANT)
+
+
+---@param locust EntityFamiliar
+---@param collider Entity
+function mod:OnLocustCollision(locust, collider)
+	if locust.SubType ~= CollectibleType.COLLECTIBLE_BLANK_BOMBS then return end
+	if collider.Type ~= EntityType.ENTITY_PROJECTILE then return end
+
+	local projectile = collider:ToProjectile()
+
+	if projectile:HasProjectileFlags(ProjectileFlags.ACID_GREEN) or
+	projectile:HasProjectileFlags(ProjectileFlags.ACID_RED) or
+	projectile:HasProjectileFlags(ProjectileFlags.CREEP_BROWN) or
+	projectile:HasProjectileFlags(ProjectileFlags.EXPLODE) or
+	projectile:HasProjectileFlags(ProjectileFlags.BURST) or
+	projectile:HasProjectileFlags(ProjectileFlags.ACID_GREEN) then
+		--If the projectile has any flag that triggers on hit, we need to remove the projectile
+		projectile:Remove()
+	else
+		projectile:Die()
+	end
+end
+mod:AddCallback(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, mod.OnLocustCollision, FamiliarVariant.ABYSS_LOCUST)
 
 -------
 

@@ -1,0 +1,3 @@
+<locusts gfxroot="gfx/familiar/locusts/">
+    <locust id="0" color="fly_blue"/>
+</locusts>
