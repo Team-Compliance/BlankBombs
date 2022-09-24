@@ -8,9 +8,9 @@ local RocketsAboutToExplode = {}
 
 if EID then
 	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombs#-50% bomb damage#The player is immune from their own bombs#Placed bombs destroy enemy projectiles and knock back enemies within a radius#Bombs explode instantly#Press {{ButtonRT}} + {{ButtonLB}} to place normal bombs", "Blank Bombs", "en_us")
-	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombas#El jugador es inmune a sus bombas#Las bombas que exploten eliminarán los disparos enemigos y empujarán a los enemigos cercanos#Las bombas explotan inmediatamente#Pulsa {{ButtonRT}} + {{ButtonLB}} para poner bombas normales", "Bombas de Fogueo", "spa")
-	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 бомб#Игрок невосприимчив к урону от собственной бомбы#Размещенные бомбы уничтожают вражеские снаряды и отбрасывают врагов в радиусе#Бомбы мгновенно взрываются при размещении#Нажмите кнопку {{ButtonRT}} + {{ButtonLB}}, чтобы разместить обычные бомбы", "Пустые бомбы", "ru")
-	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombas#O jogador e imune a dano de suas próprias bombas#Bombas colocadas destroem projetéis de inimigos e derrubam eles assim que elas são colocadas#Pressione {{ButtonRT}} + {{ButtonLB}} para colocar bombas normais", "Bombas de Festim", "pt_br")
+	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombas#-50% daño de bomba#El jugador es inmune a sus bombas#Las bombas que exploten eliminarán los disparos enemigos y empujarán a los enemigos cercanos#Las bombas explotan inmediatamente#Pulsa {{ButtonRT}} + {{ButtonLB}} para poner bombas normales", "Bombas de Fogueo", "spa")
+	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 бомб#-50% урон от бомбы#Игрок невосприимчив к урону от собственной бомбы#Размещенные бомбы уничтожают вражеские снаряды и отбрасывают врагов в радиусе#Бомбы мгновенно взрываются при размещении#Нажмите кнопку {{ButtonRT}} + {{ButtonLB}}, чтобы разместить обычные бомбы", "Пустые бомбы", "ru")
+	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombas#-50% de dano de bomba#O jogador e imune a dano de suas próprias bombas#Bombas colocadas destroem projetéis de inimigos e derrubam eles assim que elas são colocadas#Pressione {{ButtonRT}} + {{ButtonLB}} para colocar bombas normais", "Bombas de Festim", "pt_br")
 end
 if MiniMapiItemsAPI then
     local frame = 1
