@@ -184,6 +184,7 @@ function mod:OnBombInitLate(bomb)
 			player:GetData().AddNoKnockBackFlag = 2
 		end
 
+		bomb.ExplosionDamage = bomb.ExplosionDamage / 2
 		bomb:SetExplosionCountdown(0)
 	end
 end
