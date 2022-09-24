@@ -7,7 +7,7 @@ local BombsInRoom = {}
 local RocketsAboutToExplode = {}
 
 if EID then
-	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombs#Placed bombs destroy enemy projectiles and push enemies in range#Placed bombs explode inmediately unless the drop button is pressed", "Blank Bombs", "en_us")
+	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombs#The player is immune from their own bomb damage#Placed bombs destroy enemy projectiles and knock back enemies within a radius#Bombs explode instantly upon placement#Press the Drop Key + Bomb Key to place normal bombs", "Blank Bombs", "en_us")
 	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}} +5 Bombas#Las bombas que exploten eliminarán los disparos enemigos y empujarán a los enemigos cercanos#Las bombas explotan inmediatamente a menos que se presione la tecla de soltar", "Bombas de Fogueo", "spa")
 	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}}+5 бомб#Размещенные бомбы уничтожают все вражеские снаряды и сбивают с толку всех врагов на 1 секунду после взрыва", "Пустые бомбы", "ru")
 	EID:addCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS, "{{Bomb}}+5 Bombas#Bombas colocadas destroem todos projéteis de enemigos e confundi todos enemigos por 1 segundo depois de explodir", "Bombas de Festim", "pt_br")
@@ -22,22 +22,24 @@ end
 local Wiki = {
   BlankBombs = {
     { -- Effect
-		{str = "Effect", fsize = 2, clr = 3, halign = 0},
-		{str = "Gives the player 5 bombs."},
-		{str = "Blank Bomb explosions destroy all enemy projectiles."},
-		{str = "Explosions confuse all enemies in the current room for 1 second."},
-	},
-	{ -- Interactions
+      {str = "Effect", fsize = 2, clr = 3, halign = 0},
+      {str = "Gives the player 5 bombs."},
+      {str = "The player is immune from their own bomb damage."}
+      {str = "Blank Bombs explode instantly upon placement."},
+      {str = "If the Drop Key + Bomb Key is pressed, bombs get placed normally."},
+      {str = "Blank Bomb explosions destroy all enemy projectiles within a radius."},
+      {str = "Blank Bomb explosions knock back enemies within a radius."},
+    },
+    { -- Interactions
       {str = "Interactions", fsize = 2, clr = 3, halign = 0},
       {str = "External Item Descriptions: Provides a description for the item."},
       {str = "Encyclopedia: Provides a more detailed description for the item."},
-	  {str = "MinimapiItemsAPI: Provides a minimap icon for the item."},
+      {str = "MinimapiItemsAPI: Provides a minimap icon for the item."},
     },
     { -- Trivia
       {str = "Trivia", fsize = 2, clr = 3, halign = 0},
-      {str = "Blank Bombs were a scrapped item from the acclaimed Antibirth mod."},
-      {str = "Originally, Blank Bombs were meant to explode instantly and not damage the player, this idea was later revised by _Kilburn."},
-	  {str = "This mod was coded by kittenchilly, with spritework done by Royal and ALADAR!"},
+      {str = "Blank Bombs were a scrapped item concept from the acclaimed Antibirth mod."},
+      {str = "This item was coded by kittenchilly and Thicco Catto, with spritework done by Royal, ALADAR, and Demi!"},
     },
   }
 }
