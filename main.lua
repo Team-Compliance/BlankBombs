@@ -236,6 +236,11 @@ mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.OnMonstroUpdate, EntityType.ENTI
 
 ---@param rocket EntityEffect
 function mod:OnEpicFetusRocketUpdate(rocket)
+	local player = rocket.SpawnerEntity
+	if not player then return end
+	if not player:ToPlayer() then return end
+	if not player:ToPlayer():HasCollectible(CollectibleType.COLLECTIBLE_BLANK_BOMBS) then return end
+
 	if rocket.Timeout ~= 0 then return end
 
 	local ptrHash = GetPtrHash(rocket)
